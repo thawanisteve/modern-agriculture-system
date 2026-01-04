@@ -1,0 +1,856 @@
+<app-navbar />
+
+<div class="min-h-screen bg-gray-50">
+  <!-- Page Header -->
+  <div class="bg-white shadow-sm border-b">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-6">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900" style="color: #4a704a;">
+            Admin Dashboard
+          </h1>
+          <p class="text-gray-600 mt-1">
+            Manage users, machinery, bookings, and system overview
+          </p>
+        </div>
+        <div class="flex items-center space-x-3">
+          <!-- Export Dropdown -->
+          <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="btn btn-outline btn-sm">
+              <i class="ph ph-download text-base"></i>
+              <span class="hidden sm:inline ml-2">Export Reports</span>
+              <i class="ph ph-caret-down ml-1"></i>
+            </div>
+            <ul tabindex="0" class="dropdown-content menu bg-white rounded-lg shadow-lg z-[1] w-52 p-2">
+              <li><a (click)="exportCSV()" class="text-sm"><i class="ph ph-file-csv mr-2"></i>Export CSV</a></li>
+              <li><a (click)="exportPDF()" class="text-sm"><i class="ph ph-file-pdf mr-2"></i>Export PDF</a></li>
+              <li><a (click)="openExportModal()" class="text-sm"><i class="ph ph-gear mr-2"></i>Custom Export</a></li>
+            </ul>
+          </div>
+          <!-- Add User Button -->
+          <button class="btn btn-primary btn-sm" style="background-color: #4a704a; border-color: #4a704a;" (click)="openUserModal()">
+            <i class="ph ph-user-plus text-base"></i>
+            <span class="hidden sm:inline ml-2">Add User</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+      <!-- Total Users -->
+      <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-blue-500 hover:shadow-md transition-shadow">
+        <div class="flex items-center">
+          <div class="p-3 bg-blue-100 rounded-lg">
+            <i class="ph ph-users text-2xl text-blue-600"></i>
+          </div>
+          <div class="ml-4 flex-1">
+            <p class="text-sm font-medium text-gray-500">Total Users</p>
+            <p class="text-2xl font-bold text-gray-900">{{ adminStats().totalUsers }}</p>
+            <p class="text-xs text-green-600 flex items-center mt-1">
+              <i class="ph ph-trend-up mr-1"></i>
+              +{{ adminStats().newUsersThisMonth }} this month
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Total Bookings -->
+      <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-green-500 hover:shadow-md transition-shadow">
+        <div class="flex items-center">
+          <div class="p-3 bg-green-100 rounded-lg">
+            <i class="ph ph-calendar-check text-2xl text-green-600"></i>
+          </div>
+          <div class="ml-4 flex-1">
+            <p class="text-sm font-medium text-gray-500">Total Bookings</p>
+            <p class="text-2xl font-bold text-gray-900">{{ rentalStats().total }}</p>
+            <p class="text-xs text-blue-600 flex items-center mt-1">
+              <i class="ph ph-clock mr-1"></i>
+              {{ rentalStats().active }} active
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Monthly Revenue -->
+<!--      <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-purple-500 hover:shadow-md transition-shadow">-->
+<!--        <div class="flex items-center">-->
+<!--          <div class="p-3 bg-purple-100 rounded-lg">-->
+<!--            <i class="ph ph-currency-circle-dollar text-2xl text-purple-600"></i>-->
+<!--          </div>-->
+<!--          <div class="ml-4 flex-1">-->
+<!--            <p class="text-sm font-medium text-gray-500">Monthly Revenue</p>-->
+<!--            <p class="text-2xl font-bold text-gray-900">{{ formatCurrency(adminStats().monthlyRevenue) }}</p>-->
+<!--            <p class="text-xs text-gray-600 flex items-center mt-1">-->
+<!--              <i class="ph ph-user mr-1"></i>-->
+<!--              {{ formatCurrency(getAverageRevenuePerUser()) }}/user avg-->
+<!--            </p>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+
+      <!-- Machinery Usage -->
+<!--      <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-orange-500 hover:shadow-md transition-shadow">-->
+<!--        <div class="flex items-center">-->
+<!--          <div class="p-3 bg-orange-100 rounded-lg">-->
+<!--            <i class="ph ph-tractor text-2xl text-orange-600"></i>-->
+<!--          </div>-->
+<!--          <div class="ml-4 flex-1">-->
+<!--            <p class="text-sm font-medium text-gray-500">Machinery Usage</p>-->
+<!--            <p class="text-2xl font-bold text-gray-900">{{ getMachineryUtilizationRate() }}%</p>-->
+<!--            <p class="text-xs text-gray-600 flex items-center mt-1">-->
+<!--              <i class="ph ph-check-circle mr-1"></i>-->
+<!--              {{ adminStats().availableMachinery }}/{{ adminStats().totalMachinery }} available-->
+<!--            </p>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </div>-->
+
+      <!-- Overdue Rentals -->
+      <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-red-500 hover:shadow-md transition-shadow">
+        <div class="flex items-center">
+          <div class="p-3 bg-red-100 rounded-lg">
+            <i class="ph ph-warning text-2xl text-red-600"></i>
+          </div>
+          <div class="ml-4 flex-1">
+            <p class="text-sm font-medium text-gray-500">Overdue Rentals</p>
+            <p class="text-2xl font-bold text-gray-900">{{ overdueRentals().length }}</p>
+            <p class="text-xs text-yellow-600 flex items-center mt-1">
+              <i class="ph ph-clock mr-1"></i>
+              {{ rentalStats().pending }} pending
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Booking Status Overview -->
+    <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+      <h2 class="text-xl font-semibold text-gray-900 mb-6">Booking Status Overview</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-gradient-to-r from-green-50 to-green-100 p-4 rounded-lg border border-green-200">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="font-semibold text-green-800">Active Bookings</h3>
+              <p class="text-3xl font-bold text-green-600 mt-2">{{ rentalStats().active }}</p>
+              <p class="text-sm text-green-700 mt-1">Currently in progress</p>
+            </div>
+            <i class="ph ph-play-circle text-3xl text-green-500"></i>
+          </div>
+        </div>
+
+        <div class="bg-gradient-to-r from-blue-50 to-blue-100 p-4 rounded-lg border border-blue-200">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="font-semibold text-blue-800">Completed</h3>
+              <p class="text-3xl font-bold text-blue-600 mt-2">{{ rentalStats().completed }}</p>
+              <p class="text-sm text-blue-700 mt-1">{{ getBookingSuccessRate() }}% success rate</p>
+            </div>
+            <i class="ph ph-check-circle text-3xl text-blue-500"></i>
+          </div>
+        </div>
+
+        <div class="bg-gradient-to-r from-yellow-50 to-yellow-100 p-4 rounded-lg border border-yellow-200">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="font-semibold text-yellow-800">Pending Approval</h3>
+              <p class="text-3xl font-bold text-yellow-600 mt-2">{{ rentalStats().pending }}</p>
+              <p class="text-sm text-yellow-700 mt-1">Awaiting approval</p>
+            </div>
+            <i class="ph ph-clock text-3xl text-yellow-500"></i>
+          </div>
+        </div>
+
+        <div class="bg-gradient-to-r from-red-50 to-red-100 p-4 rounded-lg border border-red-200">
+          <div class="flex items-center justify-between">
+            <div>
+              <h3 class="font-semibold text-red-800">Cancelled</h3>
+              <p class="text-3xl font-bold text-red-600 mt-2">{{ rentalStats().cancelled }}</p>
+              <p class="text-sm text-red-700 mt-1">{{ getBookingConversionRate() }}% conversion</p>
+            </div>
+            <i class="ph ph-x-circle text-3xl text-red-500"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Navigation -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div class="border-b border-gray-200">
+        <nav class="flex" aria-label="Tabs">
+          <button
+            (click)="setActiveTab('overview')"
+            [class]="activeTab() === 'overview'
+              ? 'border-indigo-500 text-indigo-600 bg-indigo-50'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+            class="flex-1 sm:flex-none whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm transition-colors">
+            <i class="ph ph-house mr-2"></i>
+            Overview
+          </button>
+          <button
+            (click)="setActiveTab('users')"
+            [class]="activeTab() === 'users'
+              ? 'border-indigo-500 text-indigo-600 bg-indigo-50'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+            class="flex-1 sm:flex-none whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm transition-colors">
+            <i class="ph ph-users mr-2"></i>
+            Users
+            <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+              {{ users().length }}
+            </span>
+          </button>
+          <button
+            (click)="setActiveTab('bookings')"
+            [class]="activeTab() === 'bookings'
+              ? 'border-indigo-500 text-indigo-600 bg-indigo-50'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+            class="flex-1 sm:flex-none whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm transition-colors">
+            <i class="ph ph-calendar-check mr-2"></i>
+            Bookings
+            <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+              {{ rentals().length }}
+            </span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="p-6">
+        <!-- Overview Tab -->
+        @if (activeTab() === 'overview') {
+          <div class="space-y-8">
+            <!-- Quick Actions -->
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+<!--                <button-->
+<!--                  class="flex flex-col items-center p-6 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors border border-blue-200 group"-->
+<!--                  (click)="navigateToUsers()">-->
+<!--                  <i class="ph ph-users text-3xl text-blue-600 mb-3 group-hover:scale-110 transition-transform"></i>-->
+<!--                  <span class="text-sm font-medium text-blue-800">Manage Users</span>-->
+<!--                  <span class="text-xs text-blue-600 mt-1">{{ users().length }} total</span>-->
+<!--                </button>-->
+
+                <button
+                  class="flex flex-col items-center p-6 bg-green-50 rounded-lg hover:bg-green-100 transition-colors border border-green-200 group"
+                  (click)="navigateToMachinery()">
+                  <i class="ph ph-tractor text-3xl text-green-600 mb-3 group-hover:scale-110 transition-transform"></i>
+                  <span class="text-sm font-medium text-green-800">Manage Machinery</span>
+                  <span class="text-xs text-green-600 mt-1">{{ adminStats().totalMachinery }} total</span>
+                </button>
+
+<!--                <button-->
+<!--                  class="flex flex-col items-center p-6 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors border border-purple-200 group"-->
+<!--                  (click)="viewReports()">-->
+<!--                  <i class="ph ph-chart-bar text-3xl text-purple-600 mb-3 group-hover:scale-110 transition-transform"></i>-->
+<!--                  <span class="text-sm font-medium text-purple-800">View Reports</span>-->
+<!--                  <span class="text-xs text-purple-600 mt-1">Analytics</span>-->
+<!--                </button>-->
+
+<!--                <button-->
+<!--                  class="flex flex-col items-center p-6 bg-orange-50 rounded-lg hover:bg-orange-100 transition-colors border border-orange-200 group"-->
+<!--                  (click)="systemSettings()">-->
+<!--                  <i class="ph ph-gear text-3xl text-orange-600 mb-3 group-hover:scale-110 transition-transform"></i>-->
+<!--                  <span class="text-sm font-medium text-orange-800">System Settings</span>-->
+<!--                  <span class="text-xs text-orange-600 mt-1">Configure</span>-->
+<!--                </button>-->
+              </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div>
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+              <div class="bg-gray-50 rounded-lg p-4">
+                <div class="space-y-4 max-h-96 overflow-y-auto">
+                  @for (activity of recentActivities(); track activity.id) {
+                    <div class="flex items-start gap-4 p-4 bg-white rounded-lg shadow-sm border border-gray-100">
+                      <div
+                        class="p-2 rounded-full flex-shrink-0"
+                        [class.bg-green-100]="activity.type === 'user_registered'"
+                        [class.bg-blue-100]="activity.type === 'machinery_added'"
+                        [class.bg-yellow-100]="activity.type === 'booking_created'"
+                        [class.bg-purple-100]="activity.type === 'booking_approved'">
+                        <i
+                          class="ph text-lg"
+                          [class.ph-user-plus]="activity.type === 'user_registered'"
+                          [class.ph-tractor]="activity.type === 'machinery_added'"
+                          [class.ph-calendar-check]="activity.type === 'booking_created'"
+                          [class.ph-currency-circle-dollar]="activity.type === 'booking_completed'"
+                          [class.text-green-600]="activity.type === 'user_registered'"
+                          [class.text-blue-600]="activity.type === 'machinery_added'"
+                          [class.text-yellow-600]="activity.type === 'booking_created'"
+                          [class.text-purple-600]="activity.type === 'booking_approved'"></i>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900">{{ activity.description }}</p>
+                        <p class="text-xs text-gray-500 mt-1 flex items-center">
+                          <i class="ph ph-clock mr-1"></i>
+                          {{ activity.timestamp | date:'medium' }}
+                        </p>
+                      </div>
+                    </div>
+                  } @empty {
+                    <div class="text-center py-8 text-gray-500">
+                      <i class="ph ph-activity text-4xl mb-2 block"></i>
+                      <p>No recent activity</p>
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Users Tab -->
+        @if (activeTab() === 'users') {
+          <div class="space-y-6">
+            <!-- Search and Filters -->
+            <div class="flex flex-col sm:flex-row gap-4">
+              <div class="flex-1">
+                <div class="relative">
+                  <i class="ph ph-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                  <input
+                    type="text"
+                    placeholder="Search users by name, email, or phone..."
+                    class="input input-bordered w-full pl-10"
+                    [(ngModel)]="searchTerm"
+                    (input)="filterUsers()">
+                </div>
+              </div>
+              <select
+                class="select select-bordered min-w-32"
+                [(ngModel)]="selectedUserRole"
+                (change)="filterUsers()">
+                <option value="">All Roles</option>
+                <option value="admin">Admin</option>
+                <option value="supplier">Supplier</option>
+                <option value="user">User</option>
+              </select>
+            </div>
+
+            <!-- Users Table -->
+            <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
+              <div class="overflow-x-auto">
+                <table class="table w-full">
+                  <thead class="bg-gray-50">
+                  <tr>
+                    <th class="text-left py-3 px-6 font-medium text-gray-500 uppercase tracking-wider text-xs">
+                      User
+                    </th>
+                    <th class="text-left py-3 px-6 font-medium text-gray-500 uppercase tracking-wider text-xs">
+                      Contact
+                    </th>
+                    <th class="text-left py-3 px-6 font-medium text-gray-500 uppercase tracking-wider text-xs">
+                      Role
+                    </th>
+                    <th class="text-left py-3 px-6 font-medium text-gray-500 uppercase tracking-wider text-xs">
+                      Status
+                    </th>
+                    <th class="text-left py-3 px-6 font-medium text-gray-500 uppercase tracking-wider text-xs">
+                      Registered
+                    </th>
+                    <th class="text-left py-3 px-6 font-medium text-gray-500 uppercase tracking-wider text-xs">
+                      Actions
+                    </th>
+                  </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-200">
+                    @for (user of filteredUsers(); track user.id) {
+                      <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="py-4 px-6">
+                          <div class="flex items-center">
+                            <div class="flex-shrink-0 h-10 w-10">
+                              <div class="h-10 w-10 rounded-full bg-gradient-to-r from-blue-400 to-blue-600 flex items-center justify-center">
+                                <i class="ph ph-user text-white"></i>
+                              </div>
+                            </div>
+                            <div class="ml-4">
+                              <div class="text-sm font-medium text-gray-900">{{ user.displayName }}</div>
+                              <div class="text-sm text-gray-500">ID: {{ user.id.substring(0, 8) }}...</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td class="py-4 px-6">
+                          <div class="text-sm text-gray-900">{{ user.email }}</div>
+                          <div class="text-sm text-gray-500">{{ user.phoneNumber || 'No phone' }}</div>
+                        </td>
+                        <td class="py-4 px-6">
+                          <span
+                            class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                            [class.bg-red-100]="user.role === 'admin'"
+                            [class.text-red-800]="user.role === 'admin'"
+                            [class.bg-blue-100]="user.role === 'supplier'"
+                            [class.text-blue-800]="user.role === 'supplier'"
+                            [class.bg-gray-100]="user.role === 'user'"
+                            [class.text-gray-800]="user.role === 'user'">
+                            {{ user.role | titlecase }}
+                          </span>
+                        </td>
+                        <td class="py-4 px-6">
+                          <span
+                            class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                            [class.bg-green-100]="user.isActive"
+                            [class.text-green-800]="user.isActive"
+                            [class.bg-red-100]="!user.isActive"
+                            [class.text-red-800]="!user.isActive">
+                            {{ user.isActive ? 'Active' : 'Inactive' }}
+                          </span>
+                        </td>
+                        <td class="py-4 px-6 text-sm text-gray-500">
+                          {{ user.createdAt | date:'MMM d, y' }}
+                        </td>
+                        <td class="py-4 px-6">
+                          <div class="flex items-center space-x-2">
+                            <button
+                              class="text-indigo-600 hover:text-indigo-900 transition-colors"
+                              (click)="editUser(user)"
+                              title="Edit user">
+                              <i class="ph ph-pencil text-sm"></i>
+                            </button>
+                            <button
+                              class="transition-colors"
+                              [class.text-green-600]="!user.isActive"
+                              [class.hover:text-green-900]="!user.isActive"
+                              [class.text-red-600]="user.isActive"
+                              [class.hover:text-red-900]="user.isActive"
+                              (click)="toggleUserStatus(user)"
+                              [title]="user.isActive ? 'Deactivate user' : 'Activate user'">
+                              <i class="ph ph-power text-sm"></i>
+                            </button>
+                            <button
+                              class="text-red-600 hover:text-red-900 transition-colors"
+                              (click)="deleteUser(user.id)"
+                              title="Delete user">
+                              <i class="ph ph-trash text-sm"></i>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    } @empty {
+                      <tr>
+                        <td colspan="6" class="text-center py-12">
+                          <div class="text-gray-500">
+                            <i class="ph ph-users text-4xl mb-2 block"></i>
+                            <p class="text-lg font-medium">No users found</p>
+                            <p class="text-sm">Try adjusting your search criteria</p>
+                          </div>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Bookings Tab -->
+        @if (activeTab() === 'bookings') {
+          <div class="space-y-6">
+            <!-- Search and Filters -->
+            <div class="flex flex-col sm:flex-row gap-4">
+              <div class="flex-1">
+                <div class="relative">
+                  <i class="ph ph-magnifying-glass absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                  <input
+                    type="text"
+                    placeholder="Search bookings by customer, email, or transaction ID..."
+                    class="input input-bordered w-full pl-10"
+                    [(ngModel)]="bookingSearchTerm"
+                    (input)="filterBookings()">
+                </div>
+              </div>
+              <select
+                class="select select-bordered min-w-36"
+                [(ngModel)]="selectedBookingStatus"
+                (change)="filterBookings()">
+                <option value="">All Status</option>
+                <option value="pending">Pending</option>
+                <option value="active">Active</option>
+                <option value="completed">Completed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+
+            <!-- Bookings Table -->
+            <div class="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200">
+              <div class="overflow-x-auto">
+                <table class="table w-full">
+                  <thead class="bg-gray-50">
+                  <tr>
+                    <th class="text-left py-3 px-6 font-medium text-gray-500 uppercase tracking-wider text-xs">
+                      Transaction
+                    </th>
+                    <th class="text-left py-3 px-6 font-medium text-gray-500 uppercase tracking-wider text-xs">
+                      Customer
+                    </th>
+                    <th class="text-left py-3 px-6 font-medium text-gray-500 uppercase tracking-wider text-xs">
+                      Machinery
+                    </th>
+                    <th class="text-left py-3 px-6 font-medium text-gray-500 uppercase tracking-wider text-xs">
+                      Duration
+                    </th>
+                    <th class="text-left py-3 px-6 font-medium text-gray-500 uppercase tracking-wider text-xs">
+                      Amount
+                    </th>
+                    <th class="text-left py-3 px-6 font-medium text-gray-500 uppercase tracking-wider text-xs">
+                      Status
+                    </th>
+                    <th class="text-left py-3 px-6 font-medium text-gray-500 uppercase tracking-wider text-xs">
+                      Date
+                    </th>
+                  </tr>
+                  </thead>
+                  <tbody class="divide-y divide-gray-200">
+                    @for (booking of filteredBookings(); track booking.transactionRef) {
+                      <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="py-4 px-6">
+                          <div class="text-sm font-mono text-gray-900">
+                            {{ booking.transactionRef }}
+                          </div>
+                        </td>
+                        <td class="py-4 px-6">
+                          <div class="text-sm font-medium text-gray-900">
+                            {{ booking.customerFirstName }} {{ booking.customerLastName }}
+                          </div>
+                          <div class="text-sm text-gray-500">{{ booking.customerEmail }}</div>
+                        </td>
+                        <td class="py-4 px-6">
+                          <div class="text-sm font-medium text-gray-900">{{ booking.machineryName }}</div>
+                        </td>
+                        <td class="py-4 px-6">
+                          <div class="text-sm text-gray-900">
+                            {{ calculateDuration(booking.startDate, booking.endDate) }} days
+                          </div>
+                        </td>
+                        <td class="py-4 px-6">
+                          <div class="text-sm font-semibold text-gray-900">
+                            {{ formatCurrency(booking.totalAmount) }}
+                          </div>
+                        </td>
+                        <td class="py-4 px-6">
+                  <span
+                    class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ getBookingStatusClass(booking.status) }}">
+                    {{ booking.status | titlecase }}
+                  </span>
+                        </td>
+                        <td class="py-4 px-6 text-sm text-gray-500">
+                          {{ booking.createdAt | date:'MMM d, y' }}
+                        </td>
+                        <td class="py-4 px-6">
+                          <div class="flex items-center space-x-2">
+                            <button
+                              class="text-indigo-600 hover:text-indigo-900 transition-colors"
+                              (click)="viewBookingDetails(booking)"
+                              title="View details">
+                              <i class="ph ph-eye text-sm"></i>
+                            </button>
+                            @if (booking.status === 'pending') {
+                              <button
+                                class="text-green-600 hover:text-green-900 transition-colors"
+                                (click)="approveBooking(booking)"
+                                title="Approve booking">
+                                <i class="ph ph-check-circle text-sm"></i>
+                              </button>
+                            }
+                            @if (booking.status === 'active') {
+                              <button
+                                class="text-blue-600 hover:text-blue-900 transition-colors"
+                                (click)="completeBooking(booking)"
+                                title="Mark as completed">
+                                <i class="ph ph-check-square text-sm"></i>
+                              </button>
+                            }
+                            @if (booking.status !== 'completed' && booking.status !== 'cancelled') {
+                              <button
+                                class="text-red-600 hover:text-red-900 transition-colors"
+                                (click)="cancelBooking(booking)"
+                                title="Cancel booking">
+                                <i class="ph ph-x-circle text-sm"></i>
+                              </button>
+                            }
+                          </div>
+                        </td>
+                      </tr>
+                    } @empty {
+                      <tr>
+                        <td colspan="8" class="text-center py-12">
+                          <div class="text-gray-500">
+                            <i class="ph ph-calendar-x text-4xl mb-2 block"></i>
+                            <p class="text-lg font-medium">No bookings found</p>
+                            <p class="text-sm">Try adjusting your search criteria</p>
+                          </div>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- User Modal -->
+@if (showUserModal()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-gray-900">
+          {{ editingUser() ? 'Edit User' : 'Add New User' }}
+        </h3>
+        <button (click)="closeUserModal()" class="text-gray-400 hover:text-gray-600">
+          <i class="ph ph-x text-xl"></i>
+        </button>
+      </div>
+
+      <form [formGroup]="userForm" (ngSubmit)="handleUserSubmit()">
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Display Name</label>
+            <input
+              type="text"
+              formControlName="displayName"
+              class="input input-bordered w-full"
+              [class.input-error]="hasFieldError('displayName')"
+              placeholder="Enter full name">
+            @if (getFieldError('displayName')) {
+              <p class="text-red-600 text-xs mt-1">{{ getFieldError('displayName') }}</p>
+            }
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <input
+              type="email"
+              formControlName="email"
+              class="input input-bordered w-full"
+              [class.input-error]="hasFieldError('email')"
+              placeholder="Enter email address">
+            @if (getFieldError('email')) {
+              <p class="text-red-600 text-xs mt-1">{{ getFieldError('email') }}</p>
+            }
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+            <input
+              type="tel"
+              formControlName="phoneNumber"
+              class="input input-bordered w-full"
+              [class.input-error]="hasFieldError('phoneNumber')"
+              placeholder="Enter phone number">
+            @if (getFieldError('phoneNumber')) {
+              <p class="text-red-600 text-xs mt-1">{{ getFieldError('phoneNumber') }}</p>
+            }
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">National ID (Optional)</label>
+            <input
+              type="text"
+              formControlName="nationalId"
+              class="input input-bordered w-full"
+              placeholder="Enter national ID">
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Role</label>
+            <select formControlName="role" class="select select-bordered w-full">
+              <option value="user">User</option>
+              <option value="supplier">Supplier</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+
+          <div class="flex items-center">
+            <input
+              type="checkbox"
+              id="isActive"
+              formControlName="isActive"
+              class="checkbox checkbox-primary">
+            <label for="isActive" class="ml-2 text-sm font-medium text-gray-700">
+              Active User
+            </label>
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-3 mt-6">
+          <button
+            type="button"
+            (click)="closeUserModal()"
+            class="btn btn-outline">
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            style="background-color: #4a704a; border-color: #4a704a;">
+            {{ editingUser() ? 'Update User' : 'Create User' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}
+
+<!-- Booking Details Modal -->
+@if (showBookingModal() && selectedBooking()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-gray-900">Booking Details</h3>
+        <button (click)="closeBookingModal()" class="text-gray-400 hover:text-gray-600">
+          <i class="ph ph-x text-xl"></i>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Customer Information -->
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h4 class="font-semibold text-gray-900 mb-3">Customer Information</h4>
+          <div class="space-y-2">
+            <p><span class="font-medium">Name:</span> {{ selectedBooking()!.customerFirstName }} {{ selectedBooking()!.customerLastName }}</p>
+            <p><span class="font-medium">Email:</span> {{ selectedBooking()!.customerEmail }}</p>
+            <p><span class="font-medium">Customer ID:</span> {{ selectedBooking()!.customerId.substring(0, 8) }}...</p>
+          </div>
+        </div>
+
+        <!-- Booking Information -->
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h4 class="font-semibold text-gray-900 mb-3">Booking Information</h4>
+          <div class="space-y-2">
+            <p><span class="font-medium">Transaction ID:</span> {{ selectedBooking()!.transactionRef }}</p>
+            <p><span class="font-medium">Status:</span>
+              <span class="ml-2 px-2 py-1 text-xs font-semibold rounded-full {{ getBookingStatusColor(selectedBooking()!.status) }}">
+                {{ selectedBooking()!.status | titlecase }}
+              </span>
+            </p>
+            <p><span class="font-medium">Payment Status:</span> {{ selectedBooking()!.paymentStatus | titlecase }}</p>
+          </div>
+        </div>
+
+        <!-- Machinery Information -->
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h4 class="font-semibold text-gray-900 mb-3">Machinery Information</h4>
+          <div class="space-y-2">
+            <p><span class="font-medium">Machinery:</span> {{ selectedBooking()!.machineryName }}</p>
+            <p><span class="font-medium">Location:</span> {{ selectedBooking()!.location }}</p>
+            <p><span class="font-medium">Price per Day:</span> {{ formatCurrency(selectedBooking()!.pricePerDay) }}</p>
+          </div>
+        </div>
+
+        <!-- Rental Details -->
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <h4 class="font-semibold text-gray-900 mb-3">Rental Details</h4>
+          <div class="space-y-2">
+            <p><span class="font-medium">Start Date:</span> {{ selectedBooking()!.startDate | date:'medium' }}</p>
+            <p><span class="font-medium">End Date:</span> {{ selectedBooking()!.endDate | date:'medium' }}</p>
+            <p><span class="font-medium">Duration:</span> {{ selectedBooking()!.duration }} days</p>
+            <p><span class="font-medium">Total Amount:</span> {{ formatCurrency(selectedBooking()!.totalAmount) }}</p>
+          </div>
+        </div>
+      </div>
+
+      @if (selectedBooking()!.cancellationReason) {
+        <div class="mt-4 bg-red-50 p-4 rounded-lg border border-red-200">
+          <h4 class="font-semibold text-red-900 mb-2">Cancellation Reason</h4>
+          <p class="text-red-800">{{ selectedBooking()!.cancellationReason }}</p>
+        </div>
+      }
+
+      <!-- Action Buttons -->
+      <div class="flex justify-end space-x-3 mt-6">
+        @if (selectedBooking()!.status === 'pending') {
+          <button
+            (click)="approveBooking(selectedBooking()!)"
+            class="btn btn-success">
+            <i class="ph ph-check-circle mr-2"></i>
+            Approve Booking
+          </button>
+          <button
+            (click)="cancelBooking(selectedBooking()!)"
+            class="btn btn-error">
+            <i class="ph ph-x-circle mr-2"></i>
+            Cancel Booking
+          </button>
+        }
+        @if (selectedBooking()!.status === 'active') {
+          <button
+            (click)="completeBooking(selectedBooking()!)"
+            class="btn btn-primary">
+            <i class="ph ph-check-square mr-2"></i>
+            Mark as Completed
+          </button>
+        }
+        <button (click)="closeBookingModal()" class="btn btn-outline">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Export Modal -->
+@if (showExportModal()) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-semibold text-gray-900">Export Reports</h3>
+        <button (click)="closeExportModal()" class="text-gray-400 hover:text-gray-600">
+          <i class="ph ph-x text-xl"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Export Format</label>
+          <div class="space-y-2">
+            <label class="flex items-center">
+              <input
+                type="radio"
+                name="exportFormat"
+                value="pdf"
+                [checked]="exportFormat() === 'pdf'"
+                (change)="exportFormat.set('pdf')"
+                class="radio radio-primary">
+              <span class="ml-2">PDF Report</span>
+            </label>
+            <label class="flex items-center">
+              <input
+                type="radio"
+                name="exportFormat"
+                value="csv"
+                [checked]="exportFormat() === 'csv'"
+                (change)="exportFormat.set('csv')"
+                class="radio radio-primary">
+              <span class="ml-2">CSV Data</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 p-3 rounded-lg">
+          <p class="text-sm text-gray-600">
+            This will include user data, booking information, and system statistics.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-3 mt-6">
+        <button (click)="closeExportModal()" class="btn btn-outline">
+          Cancel
+        </button>
+        <button (click)="exportData()" class="btn btn-primary" style="background-color: #4a704a; border-color: #4a704a;">
+          <i class="ph ph-download mr-2"></i>
+          Export {{ exportFormat() | uppercase }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

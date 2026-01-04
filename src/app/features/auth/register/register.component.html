@@ -1,0 +1,93 @@
+<!-- register.component.html -->
+<div class="min-h-screen bg-gradient-to-br from-indigo-100 to-purple-50 flex items-center justify-center p-4">
+  <div class="relative bg-white/90 backdrop-blur-lg rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transition-all duration-300 hover:shadow-3xl">
+    <div class="p-8 space-y-8">
+      <div class="text-center space-y-2">
+        <h1 class="text-3xl font-bold" style="color: #4a704a;">
+          Agri-Rental
+        </h1>
+        <p class="text-gray-500">Create your farm machinery rental account</p>
+      </div>
+
+      @if(authService.error$ | async){
+        <div class="w-full flex items-center justify-center">
+          <div class="badge badge-error">{{ authService.error$ | async }}</div>
+        </div>
+      }
+
+      <form class="space-y-6" [formGroup]="registerForm">
+        <div class="flex flex-row gap-3 items-center">
+          <div class="w-full">
+            <input
+              formControlName="fullName"
+              type="text"
+              placeholder="Full Name"
+              class="input w-full border-0 text-gray-600 rounded-lg bg-gray-50 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
+            />
+          </div>
+
+          <div class="w-full">
+            <input
+              formControlName="email"
+              type="email"
+              placeholder="Email"
+              class="input w-full border-0 text-gray-600 rounded-lg bg-gray-50 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
+            />
+          </div>
+        </div>
+
+        <div class="flex flex-row gap-3 items-center">
+          <div class="w-full">
+            <input
+              formControlName="phoneNumber"
+              type="tel"
+              placeholder="Phone Number"
+              class="input w-full border-0 text-gray-600 rounded-lg bg-gray-50 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
+            />
+          </div>
+          <div class="w-full">
+            <input
+              formControlName="nationalId"
+              type="text"
+              placeholder="National ID"
+              class="input w-full border-0 text-gray-600 rounded-lg bg-gray-50 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
+            />
+          </div>
+        </div>
+
+        <div class="flex flex-row gap-3 items-center">
+          <div class="w-full">
+            <input
+              formControlName="password"
+              type="password"
+              placeholder="Password"
+              class="input w-full border-0 text-gray-600 rounded-lg bg-gray-50 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
+            />
+          </div>
+          <div class="w-full">
+            <input
+              formControlName="passwordConfirm"
+              type="password"
+              placeholder="Confirm Password"
+              class="input w-full border-0 text-gray-600 rounded-lg bg-gray-50 focus:ring-2 focus:ring-indigo-500 transition-all duration-200"
+            />
+          </div>
+        </div>
+
+        <button
+          (click)="registerWithEmail()"
+          type="submit"
+         class="w-full py-4 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform transition-all duration-200 hover:scale-[1.02] active:scale-95" style="background-color: #4a704a;"
+          [disabled]="(authService.loading$ | async) || registerForm.invalid"
+        >
+          {{ (authService.loading$ | async) ? 'Loading...' : 'Create Account' }}
+        </button>
+      </form>
+
+      <p class="text-center text-sm text-gray-500">
+        Already have an account?
+        <a routerLink="/login" class="text-indigo-600 hover:underline font-medium">Sign in here</a>
+      </p>
+    </div>
+  </div>
+</div>

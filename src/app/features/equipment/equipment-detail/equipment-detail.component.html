@@ -1,0 +1,177 @@
+<app-navbar />
+
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-25 p-8">
+  <div class="max-w-7xl mx-auto">
+    @if (machine()) {
+      <a routerLink="/equipment" class="btn btn-active mt-6 mb-3" style="background-color: #4a704a; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; font-weight: 500;">
+        Back to Listing
+      </a>
+
+      <!-- Success Message -->
+      @if (successMessage()) {
+        <div class="alert alert-success mb-6">
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{{ successMessage() }}</span>
+        </div>
+      }
+
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-8">
+        <!-- Image Gallery -->
+        <div class="bg-white rounded-2xl shadow-xl p-6">
+          <gallery [items]="imageList()"
+                   thumbPosition="left"
+                   imageSize="contain"
+                   class="h-[500px]"></gallery>
+        </div>
+
+        <!-- Details Section -->
+        <div class="space-y-6">
+          <!-- Status Badge -->
+          <div class="bg-white rounded-2xl shadow-xl p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-2xl font-bold">{{ machine()?.name }}</h2>
+              <div class="badge"
+                   [class.badge-success]="machine()?.status === 'available'"
+                   [class.badge-error]="machine()?.status === 'rented'"
+                   [class.badge-warning]="machine()?.status === 'maintenance'">
+                {{ machine()?.status || 'available' }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Pricing Card -->
+          <div class="bg-white rounded-2xl shadow-xl p-6">
+            <div class="flex items-baseline gap-2 mb-4">
+              <span class="text-3xl font-bold text-primary" style="color: black;">
+                {{ machine()?.pricePerDay | currency:'MWK' }}
+              </span>
+              <span class="text-gray-500">/ day</span>
+            </div>
+
+            @if (isAvailableForRent()) {
+              <!-- Rental Duration Selector -->
+              <div class="mb-4">
+                <label class="label">
+                  <span class="label-text font-medium">Rental Duration</span>
+                </label>
+                <div class="flex items-center gap-2">
+                  <button class="btn btn-sm btn-outline"
+                          (click)="updateRentalDuration(rentalDuration() - 1)"
+                          [disabled]="rentalDuration() <= 1">
+                    -
+                  </button>
+                  <input type="number"
+                         class="input input-bordered w-20 text-center"
+                         [value]="rentalDuration()"
+                         (change)="updateRentalDuration(1)"
+                         min="1">
+                  <button class="btn btn-sm btn-outline"
+                          (click)="updateRentalDuration(rentalDuration() + 1)">
+                    +
+                  </button>
+                  <span class="text-sm text-gray-500">day(s)</span>
+                </div>
+              </div>
+
+              <!-- Total Amount -->
+              <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                <div class="flex justify-between items-center">
+                  <span class="font-medium">Total Amount:</span>
+                  <span class="text-xl font-bold" style="color: #4a704a;">
+                    {{ totalAmount() | currency:'MWK' }}
+                  </span>
+                </div>
+                <div class="text-sm text-gray-600 mt-1">
+                  {{ machine()?.pricePerDay | currency:'MWK' }} × {{ rentalDuration() }} day(s)
+                </div>
+              </div>
+
+              <!-- Payment Form -->
+              <form>
+                <div id="wrapper"></div>
+                <button
+                  type="button"
+                  class="btn w-full mt-4"
+                  style="background-color: #4a704a; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; font-weight: 500;"
+                  (click)="makePayment(totalAmount())"
+                  [disabled]="!isScriptLoaded() || isProcessing()">
+                  {{ buttonText() }}
+                </button>
+              </form>
+            } @else {
+              <div class="alert alert-warning">
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+                <span>This equipment is currently not available for rental.</span>
+              </div>
+            }
+
+            @if (error()) {
+              <div class="alert alert-error mt-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{{ error() }}</span>
+              </div>
+            }
+          </div>
+
+          <!-- Specifications -->
+          <div class="bg-white rounded-2xl shadow-xl p-6">
+            <h2 class="text-2xl font-bold mb-4">Specifications</h2>
+            <div class="grid grid-cols-2 gap-4">
+              <div class="flex items-center gap-2">
+                <i class="ph ph-engine text-xl text-primary"></i>
+                <span class="font-medium">Type:</span>
+                <span>{{ machine()?.type }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="ph ph-horse text-xl text-primary"></i>
+                <span class="font-medium">Horsepower:</span>
+                <span>{{ machine()?.specs?.horsepower || 'N/A' }} HP</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="ph ph-gas-pump text-xl text-primary"></i>
+                <span class="font-medium">Fuel Type:</span>
+                <span>{{ machine()?.specs?.fuelType || 'N/A' }}</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <i class="ph ph-weight text-xl text-primary"></i>
+                <span class="font-medium">Weight:</span>
+                <span>{{ machine()?.specs?.weight || 'N/A' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Location & Description -->
+          <div class="bg-white rounded-2xl shadow-xl p-6">
+            <div class="flex items-center gap-2 mb-4">
+              <i class="ph ph-map-pin text-xl text-primary"></i>
+              <h3 class="text-xl font-bold">Location</h3>
+            </div>
+            <p class="text-gray-600">{{ machine()?.location }}</p>
+
+            <div class="mt-6">
+              <h3 class="text-xl font-bold mb-2">Description</h3>
+              <p class="text-gray-600 leading-relaxed">
+                {{ machine()?.description }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="text-center p-12 bg-white rounded-2xl shadow-xl">
+        <i class="ph ph-warning-circle text-4xl text-error mb-4"></i>
+        <h2 class="text-2xl font-bold">Machinery not found</h2>
+        <p class="mt-2 text-gray-600">The requested equipment could not be found</p>
+        <a routerLink="/equipment" class="btn btn-ghost mt-6">
+          Back to Listing
+        </a>
+      </div>
+    }
+  </div>
+</div>

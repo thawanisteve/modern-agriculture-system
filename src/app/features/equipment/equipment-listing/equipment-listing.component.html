@@ -1,0 +1,186 @@
+<app-navbar />
+
+<div class="min-h-screen bg-gradient-to-br from-indigo-100 to-purple-50 p-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Search and Filters -->
+    <div class="bg-white/90 backdrop-blur-lg rounded-2xl shadow-xl p-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+        <input type="text"
+               placeholder="Search machinery..."
+               class="input input-bordered w-full"
+               [formControl]="searchControl" />
+
+        <select class="select select-bordered w-full"
+                (change)="filterType($event)"
+        >
+          <option value="">All Types</option>
+          <option *ngFor="let type of equipmentTypes">{{ type }}</option>
+        </select>
+
+        <select class="select select-bordered w-full"
+                (change)="filterDistrict($event)"
+        >
+          <option value="">All Districts</option>
+          <option *ngFor="let district of malawiDistricts">{{ district }}</option>
+        </select>
+
+        <div class="flex items-center gap-2">
+          <input type="number"
+                 placeholder="Min price"
+                 class="input input-bordered w-1/2"
+                 [formControl]="minPriceControl" />
+          <input type="number"
+                 placeholder="Max price"
+                 class="input input-bordered w-1/2"
+                 [formControl]="maxPriceControl" />
+        </div>
+
+        <button class="btn w-full" style="background-color: #4a704a; color: white; padding: 0.5rem 1rem; border-radius: 0.5rem; border: none; cursor: pointer; font-weight: 500;" (click)="resetFilters()">
+          Reset Filters
+        </button>
+      </div>
+    </div>
+
+    <!-- Machinery Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      @if (machineryService.loading()) {
+        <div class="col-span-full text-center p-8">
+          <span class="loading loading-spinner loading-lg"></span>
+          <p class="mt-4 text-gray-600">Loading machinery...</p>
+        </div>
+      }
+      @else if (machineryService.error()) {
+        <div class="col-span-full text-center p-8">
+          <div class="text-error">
+            <i class="ph ph-warning-circle text-3xl"></i>
+            <p class="mt-2">Error: {{ machineryService.error() }}</p>
+            <button class="btn btn-ghost mt-4" (click)="machineryService.initializeMachineryListener()">
+              Retry
+            </button>
+          </div>
+        </div>
+      }
+      @else{
+        @if (filteredMachinery().length > 0) {
+          @for (machine of filteredMachinery(); track machine.id) {
+            <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+              <figure class="px-4 pt-4">
+                <img [src]="machine.images[0]"
+                     alt="Machine image"
+                     class="rounded-xl h-48 w-full object-cover" />
+              </figure>
+
+              <div class="card-body">
+                <h2 class="card-title" style="color: #4a704a;">{{ machine.name }}</h2>
+
+                <div class="flex items-center gap-2">
+                  <i class="ph ph-currency-dollar text-lg"></i>
+                  <span class="text-xl font-bold">{{ machine.pricePerDay | currency:'MWK' }}</span>
+                  <span class="text-gray-500">/day</span>
+                </div>
+
+                <div class="flex flex-wrap gap-2 mt-2">
+                  @if (machine.specs?.horsepower) {
+                    <div class="badge badge-outline">
+                      <i class="ph ph-horse ph-sm mr-1"></i>
+                      {{ machine.specs.horsepower }} HP
+                    </div>
+                  }
+                  @if(machine.type){
+                    <div class="badge badge-outline">{{ machine.type }}</div>
+                  }
+                  @if(machine.location){
+                    <div class="badge badge-outline">
+                      <i class="ph ph-map-pin ph-sm mr-1"></i>
+                      {{ machine.location }}
+                    </div>
+                  }
+                </div>
+
+                <div class="card-actions mt-4">
+                  <button (click)="viewMachineDetails(machine.id)" class="btn w-full" style="background-color: #4a704a; color: white; border-color: #4a704a;">
+                    View Details
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        } @else {
+          <div class="col-span-full text-center p-8">
+            <p class="text-gray-500">No machinery found matching filters</p>
+            <p class="text-sm text-gray-400 mt-2">
+              Total machinery: {{ machineryService.machinery().length }}
+            </p>
+          </div>
+        }
+      }
+
+    </div>
+  </div>
+</div>
+
+<!--chatbot interface-->
+<button title="message chatbot" class="fixed bottom-4 right-4 btn rounded-full w-14 h-14 shadow-lg z-50" style="background-color: #4a704a; color: white;"
+        (click)="isChatOpen.set(!isChatOpen())">
+  <ng-icon name="heroChatBubbleBottomCenterText" size="20" />
+</button>
+
+@if (isChatOpen()) {
+  <div class="fixed bottom-20 right-4 w-96 bg-white rounded-xl shadow-xl flex flex-col z-50">
+    <!-- Chat Header -->
+    <div class="text-white p-4 rounded-t-xl flex items-center gap-3" style="background-color: #4a704a;">
+      <div class="p-2 bg-white/20 rounded-full">
+        <i class="ph ph-robot text-xl"></i>
+      </div>
+      <div>
+        <h3 class="font-bold">Chatbot Assistant</h3>
+        <p class="text-sm opacity-90">How can I help you today?</p>
+      </div>
+      <button class="ml-auto hover:bg-white/10 p-1 rounded-full"
+              (click)="isChatOpen.set(false)">
+        <ng-icon name="heroBolt" size="12" />
+      </button>
+    </div>
+
+    <!-- Chat Messages -->
+    <div class="flex-1 p-4 space-y-4 bg-gray-50 flex flex-col">
+      <div #chatContainer  class="overflow-y-auto h-[300px] scrollbar-thin scrollbar-thumb-primary/20 scrollbar-track-transparent">
+        @for (message of chatMessages(); track $index) {
+          <div class="flex mb-4 " [class.justify-end]="message.sender === 'user'">
+            <div class="max-w-[85%] p-3 rounded-xl break-words whitespace-pre-wrap"
+                 [class.bg-primary]="message.sender === 'user'"
+                 [class.text-white]="message.sender === 'user'"
+                 [class.bg-white]="message.sender === 'bot'"
+                 [class.shadow-sm]="message.sender === 'bot'"
+                 [class.animate-fade-in]="message.final">
+              {{ message.content }}
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Chat Input -->
+    <div class="p-4 border-t bg-white">
+      <div class="flex gap-2">
+        <input type="text"
+               placeholder="Type your message..."
+               class="input input-bordered flex-1 input-sm"
+               [value]="newMessage()"
+               (input)="setNewMessage($event)"
+               (keyup.enter)="sendMessage()">
+        <button class="btn btn-sm" style="background-color: #4a704a; color: white; border-color: #4a704a;" (click)="sendMessage()">
+          <ng-icon name="heroPaperAirplane" size="18" />
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (chatMessages().length > 0 && chatMessages()[chatMessages().length-1]!.content === '...') {
+  <div class="flex justify-start">
+    <div class="max-w-[80%] p-3 rounded-xl bg-gray-100 animate-pulse">
+      <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+    </div>
+  </div>
+}

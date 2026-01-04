@@ -1,0 +1,375 @@
+<nav   class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/95 backdrop-blur-md border-b border-gray-100">
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between py-4">
+
+      <!-- Logo -->
+      <div class="flex items-center">
+        <a routerLink="/" class="text-2xl font-bold">
+          <span class="text-gray-900" style="color: #4a704a;">Agri</span>
+          <span class="text-[#4a704a]">Rental</span>
+        </a>
+      </div>
+
+      <!-- Desktop Menu -->
+      <div  class="hidden md:flex items-center space-x-8">
+       
+        <a href="#Benefits"
+           class="text-gray-700 hover:text-indigo-600 transition-colors font-medium">
+          Benefits
+        </a>
+        <a  href="#how-it-works"
+                class="text-gray-700 hover:text-indigo-600 transition-colors font-medium">
+          How It Works
+        </a>
+        <a href="#portfolio"
+           class="text-gray-700 hover:text-indigo-600 transition-colors font-medium">
+          Portfolio
+        </a>
+        <a href="#contact"
+           class="text-gray-700 hover:text-indigo-600 transition-colors font-medium">
+          Contact
+        </a>
+      </div>
+
+      <!-- Desktop Auth Buttons -->
+      <div class="hidden md:flex items-center space-x-4">
+        <a routerLink="/login"
+           class="text-gray-700 hover:text-indigo-600 transition-colors font-medium px-4 py-2">
+          Login
+        </a>
+        <a routerLink="/register"
+          class="bg-[#4a704a] text-white px-6 py-2 rounded-lg font-medium hover:shadow-lg transition-all duration-300 hover:scale-105">
+          Register
+        </a>
+      </div>
+      
+
+      <!-- Mobile Menu Button -->
+      <div class="md:hidden">
+        <button (click)="toggleMobileMenu()"
+                class="text-gray-700 hover:text-indigo-600 transition-colors p-2">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path *ngIf="!isMobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            <path *ngIf="isMobileMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div class="md:hidden bg-white border-t border-gray-100 transition-all duration-300"
+       [class.hidden]="!isMobileMenuOpen">
+    <div class="container mx-auto px-4 py-4 space-y-4">
+      <a routerLink="/"
+         (click)="closeMobileMenu()"
+         routerLinkActive="text-indigo-600 bg-indigo-50"
+         [routerLinkActiveOptions]="{exact: true}"
+         class="block text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition-colors font-medium px-4 py-3 rounded-lg">
+        Home
+      </a>
+      <a routerLink="/equipment"
+         (click)="closeMobileMenu()"
+         routerLinkActive="text-indigo-600 bg-indigo-50"
+         class="block text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition-colors font-medium px-4 py-3 rounded-lg">
+        Equipment
+      </a>
+      <a routerLink="/how-it-works"
+         (click)="closeMobileMenu()"
+         routerLinkActive="text-indigo-600 bg-indigo-50"
+         class="block text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition-colors font-medium px-4 py-3 rounded-lg">
+        How It Works
+      </a>
+      <a routerLink="/pricing"
+         (click)="closeMobileMenu()"
+         routerLinkActive="text-indigo-600 bg-indigo-50"
+         class="block text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition-colors font-medium px-4 py-3 rounded-lg">
+        Pricing
+      </a>
+      <a routerLink="/about"
+         (click)="closeMobileMenu()"
+         routerLinkActive="text-indigo-600 bg-indigo-50"
+         class="block text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 transition-colors font-medium px-4 py-3 rounded-lg">
+        About
+      </a>
+
+      <!-- Mobile Auth Buttons -->
+      <div class="border-t border-gray-100 pt-4 space-y-3">
+        <a routerLink="/login"
+           (click)="closeMobileMenu()"
+           class="block text-center text-gray-700 hover:text-indigo-600 transition-colors font-medium px-4 py-3 border border-gray-300 rounded-lg hover:border-indigo-300">
+          Login
+        </a>
+        <a routerLink="/register"
+           (click)="closeMobileMenu()"
+           class="block text-center bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-3 rounded-lg font-medium hover:shadow-lg transition-all duration-300">
+          Register
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+
+<div class="pt-20">
+  <div class="min-h-screen bg-gradient-to-br from-indigo-50 to-purple-25">
+    <!-- Hero Section -->
+    <section class="relative py-20 overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10"></div>
+      <div class="container mx-auto px-4 relative z-10">
+        <div class="flex flex-col md:flex-row items-center">
+          <div class="md:w-1/2 mb-12 md:mb-0">
+            <!--text to be green in color for title-->
+            <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6" style="color: #4a704a;">
+            Farm Machineries Rent System
+               <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600"style="color: #4a704a;">
+                <!--text to be green in color for title-->
+                AgriRental
+               </span>
+             </h1>
+            <p class="text-xl text-gray-700 mb-8 max-w-lg">
+              Access top-quality farm machinery on demand. Rent what you need, when you need it, without the high costs of ownership.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4">
+              <a
+                href="#how-it-works"
+                class="btn btn-outline btn-primary px-8 py-4 text-lg font-semibold"
+              >
+                How It Works
+              </a>
+            </div>
+          </div>
+          <div class="md:w-1/2 flex justify-center">
+            <div class="relative">
+              <div class="bg-gray-200 border-2 border-dashed rounded-xl w-full h-96"></div>
+              <div class="absolute -top-6 -right-6 w-64 h-64 bg-purple-500/20 rounded-full"></div>
+              <div class="absolute -bottom-6 -left-6 w-64 h-64 bg-indigo-500/20 rounded-full"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section  id="Benefits" class="py-20 bg-white">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Why Choose AgriRental?
+          </h2>
+          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+            We provide the perfect solution for modern farmers who need flexible access to equipment
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="bg-indigo-50/50 rounded-2xl p-8 border border-indigo-100 hover:shadow-lg transition-shadow">
+            <div class="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center mb-6">
+              <ng-icon name="featherDollarSign" size="50" />
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Cost Effective</h3>
+            <p class="text-gray-600">
+              Save up to 70% compared to purchasing equipment. Pay only for what you use, when you need it.
+            </p>
+          </div>
+
+          <div class="bg-purple-50/50 rounded-2xl p-8 border border-purple-100 hover:shadow-lg transition-shadow">
+            <div class="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mb-6">
+              <ng-icon name="featherStar" size="50" />
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Premium Equipment</h3>
+            <p class="text-gray-600">
+              Access top-tier machinery from leading brands. All equipment is regularly maintained and inspected.
+            </p>
+          </div>
+
+          <div class="bg-indigo-50/50 rounded-2xl p-8 border border-indigo-100 hover:shadow-lg transition-shadow">
+            <div class="w-16 h-16 rounded-full bg-indigo-100 flex items-center justify-center mb-6">
+              <ng-icon name="featherMapPin" size="50" />
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-4">Local Convenience</h3>
+            <p class="text-gray-600">
+              Find equipment near you with our location-based search. Easy pickup and return options.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="py-20 bg-gradient-to-br from-purple-50 to-indigo-50">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4" style="color: #4a704a;">
+         Why Choose AgriRental?
+          </h2>
+          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+            Simple steps to get the equipment you need
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div class="text-center">
+            <div class="w-20 h-20 rounded-full bg-white border-4 border-indigo-500 flex items-center justify-center mx-auto mb-6">
+              <span class="text-3xl font-bold text-indigo-600">1</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Browse</h3>
+            <p class="text-gray-600">
+              Explore our extensive catalog of farm machinery
+            </p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-20 h-20 rounded-full bg-white border-4 border-indigo-500 flex items-center justify-center mx-auto mb-6">
+              <span class="text-3xl font-bold text-indigo-600">2</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Select</h3>
+            <p class="text-gray-600">
+              Choose equipment and rental duration
+            </p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-20 h-20 rounded-full bg-white border-4 border-indigo-500 flex items-center justify-center mx-auto mb-6">
+              <span class="text-3xl font-bold text-indigo-600">3</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Book</h3>
+            <p class="text-gray-600">
+              Reserve online with secure payment
+            </p>
+          </div>
+
+          <div class="text-center">
+            <div class="w-20 h-20 rounded-full bg-white border-4 border-indigo-500 flex items-center justify-center mx-auto mb-6">
+              <span class="text-3xl font-bold text-indigo-600">4</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Farm</h3>
+            <p class="text-gray-600">
+              Pick up and use the equipment for your project
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section  id="portfolio"   class="py-20 bg-gradient-to-br from-indigo-50 to-purple-50">
+      <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            What Farmers Say
+          </h2>
+          <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+            Join thousands of satisfied farmers who use AgriRental
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="bg-white rounded-2xl p-8 shadow-lg">
+            <div class="text-yellow-400 text-2xl mb-4">
+              ★★★★★
+            </div>
+            <p class="text-gray-700 mb-6">
+              "AgriRental saved my harvest season! I needed a tractor quickly and they delivered. The process was smooth and the equipment was in perfect condition."
+            </p>
+            <div class="flex items-center">
+              <div class="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16"></div>
+              <div class="ml-4">
+                <h4 class="font-bold text-lg">James Chikwawa</h4>
+                <p class="text-gray-600">Maize Farmer, Blantyre</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-8 shadow-lg">
+            <div class="text-yellow-400 text-2xl mb-4">
+              ★★★★★
+            </div>
+            <p class="text-gray-700 mb-6">
+              "I no longer worry about equipment maintenance costs. Renting specialized machinery only when I need it has increased my farm's profitability."
+            </p>
+            <div class="flex items-center">
+              <div class="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16"></div>
+              <div class="ml-4">
+                <h4 class="font-bold text-lg">Sarah Mwale</h4>
+                <p class="text-gray-600">Soybean Farmer, Lilongwe</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl p-8 shadow-lg">
+            <div class="text-yellow-400 text-2xl mb-4">
+              ★★★★★
+            </div>
+            <p class="text-gray-700 mb-6">
+              "The AI assistant helped me find the perfect planter for my fields.<br> The whole experience from search to rental was exceptional!"
+            </p>
+            <div class="flex items-center">
+              <div class="bg-gray-200 border-2 border-dashed rounded-xl w-16 h-16"></div>
+              <div class="ml-4">
+                <h4 class="font-bold text-lg">Thomas Phiri</h4>
+                <p class="text-gray-600">Tobacco Farmer, Mzuzu</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  
+    <!-- Footer -->
+    <footer id="contact" class="text-white py-12" style="background-color: #4a704a;">
+      <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div>
+            <h3 class="text-xl font-bold mb-4">AgriRental</h3>
+            <p class="text-white">
+              Your trusted partner for farm equipment rental. Serving farmers across Malawi.
+            </p>
+          </div>
+
+          <div>
+            <h4 class="text-xl font-bold mb-4">Quick Links</h4>
+            <ul class="space-y-2">
+              <li><a href="#Benefits" class="text-white hover:text-white transition">Benefits</a></li>
+              <li><a href="#how-it-works" class="text-white hover:text-white transition">How It Works</a></li>
+              <li><a href="#portfolio" class="text-white hover:text-white transition">Portfolio</a></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 class="text-xl font-bold mb-4">Contact Us</h4>
+            <ul class="space-y-2 text-gray-400">
+              <li class="text-white">
+                <i class="ph ph-phone mr-2"></i>
+                +265 888 049 5200
+              </li>
+              <li class="text-white">
+                <i class="ph ph-envelope mr-2"></i>
+                thawanisteven7gmail.com
+              </li>
+              <li class="text-white">
+                <i class="ph ph-map-pin mr-2"></i>
+                Lilongwe, Malawi
+              </li>
+            </ul>
+          </div>
+
+          <div>
+             <h4 class="text-xl font-bold mb-4">Equipment Categories</h4>
+        <ul>
+                 <li><a href="#category">Tractors</a></li>
+                 <li><a href="#category">Harvesters</a></li>
+                 <li><a href="#category">Planters & Seeders</a></li>
+                 <li><a href="#category">Tillage Equipment</a></li>
+                 <li><a href="#category">Sprayers</a></li>
+        </ul>
+          </div>
+        </div>
+
+        <div class="border-t border-gray-800 mt-12 pt-8 text-center text-white">
+          <p>© 2025 AgriRental. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+</div>

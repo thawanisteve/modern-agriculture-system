@@ -1,0 +1,199 @@
+<app-navbar />
+
+<div class="min-h-screen bg-gray-50 p-8">
+  <div class="max-w-7xl mx-auto space-y-8">
+    <!-- Dashboard Header -->
+    <div class="flex justify-between items-center">
+      <h1 class="text-3xl font-bold text-gray-900" style="color: #4a704a;">Machinery Management</h1>
+      @if(currentUser?.email === 'supplier@gmail.com'){
+        <button class="btn btn-primary" style="background-color: #4a704a;" (click)="openAddModal()">
+          <i class="ph ph-plus-circle text-lg mr-2"></i>
+          Add New Machinery
+        </button>
+      }
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="bg-white p-6 rounded-xl shadow-sm">
+        <div class="flex items-center gap-4">
+          <div class="p-3 bg-blue-100 rounded-lg">
+            <i class="ph ph-tractor text-2xl text-blue-600"></i>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Total Machinery</p>
+            <p class="text-2xl font-bold">{{ stats().total }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white p-6 rounded-xl shadow-sm">
+        <div class="flex items-center gap-4">
+          <div class="p-3 bg-green-100 rounded-lg">
+            <i class="ph ph-check-circle text-2xl text-green-600"></i>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Available Now</p>
+            <p class="text-2xl font-bold">{{ stats().available }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white p-6 rounded-xl shadow-sm">
+        <div class="flex items-center gap-4">
+          <div class="p-3 bg-purple-100 rounded-lg">
+            <i class="ph ph-currency-circle-dollar text-2xl text-purple-600"></i>
+          </div>
+          <div>
+            <p class="text-sm text-gray-500">Monthly Revenue</p>
+            <p class="text-2xl font-bold">MWK {{ stats().revenue }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Machinery Table -->
+    <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+      <table class="w-full">
+        <thead class="bg-gray-50">
+        <tr>
+          <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">Name</th>
+          <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">Type</th>
+          <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">Status</th>
+          <th class="px-6 py-4 text-left text-sm font-semibold text-gray-900">Price/Day</th>
+          <th class="px-6 py-4 text-right text-sm font-semibold text-gray-900">Actions</th>
+        </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          @for (machine of machinery(); track machine.id) {
+            <tr>
+              <td class="px-6 py-4 text-sm text-gray-900">{{ machine.name }}</td>
+              <td class="px-6 py-4 text-sm text-gray-500">{{ machine.type }}</td>
+              <td class="px-6 py-4">
+                <span class="px-2.5 py-1 rounded-full text-xs font-medium"
+                      [class.bg-green-100]="machine.status === 'available'"
+                      [class.text-green-800]="machine.status === 'available'"
+                      [class.bg-red-100]="machine.status !== 'available'"
+                      [class.text-red-800]="machine.status !== 'available'">
+                  {{ machine.status | titlecase }}
+                </span>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-900">
+                {{ machine.pricePerDay | currency:'MWK' }}
+              </td>
+              <td class="px-6 py-4 text-right text-sm space-x-4">
+                <button class="text-blue-600 hover:text-blue-900" (click)="editMachine(machine)">
+                  Edit
+                </button>
+                <button class="text-red-600 hover:text-red-900" (click)="deleteMachine(machine.id)">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+@if (showModal()) {
+  <div class="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl w-full max-w-2xl p-6">
+      <h2 class="text-xl font-bold mb-6">
+        {{ editingMachine() ? 'Edit Machinery' : 'Add New Machinery' }}
+      </h2>
+
+      <form [formGroup]="machineForm" (ngSubmit)="handleSubmit()">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Form Fields -->
+          <div class="space-y-4">
+            <label class="block text-sm font-medium text-gray-700">Name</label>
+            <input type="text" formControlName="name" class="input input-bordered w-full">
+
+            <label class="block text-sm font-medium text-gray-700">Type</label>
+            <select formControlName="type" class="select select-bordered w-full">
+              <option value="">Select Type</option>
+              @for (type of equipmentTypes; track type) {
+                <option [value]="type">{{ type }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="space-y-4">
+            <label class="block text-sm font-medium text-gray-700">Price/Day</label>
+            <input type="number" formControlName="pricePerDay" class="input input-bordered w-full">
+
+            <label class="block text-sm font-medium text-gray-700">Status</label>
+            <select formControlName="status" class="select select-bordered w-full">
+              <option value="available">Available</option>
+              <option value="maintenance">Maintenance</option>
+              <option value="rented">Rented</option>
+            </select>
+          </div>
+
+          <div class="space-y-4">
+            <label class="block text-sm font-medium text-gray-700">Description</label>
+            <textarea formControlName="description" class="input input-bordered w-full"></textarea>
+          </div>
+
+          <div class="space-y-4">
+            <label class="block text-sm font-medium text-gray-700">Location</label>
+            <input type="text" formControlName="location" class="input input-bordered w-full">
+          </div>
+        </div>
+
+        <!-- Image Upload Section -->
+        <div class="col-span-full space-y-4">
+          <label class="block text-sm font-medium text-gray-700">
+            Images (Max {{ maxImages }})
+          </label>
+
+          <div class="flex flex-wrap gap-4 mb-4">
+            @for (preview of imagePreviews(); track $index) {
+              <div class="relative group">
+                <img [src]="preview"
+                     class="h-24 w-24 object-cover rounded-lg shadow-sm">
+                <button type="button"
+                        class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                        (click)="removeImage($index)">
+                  <i class="ph ph-x text-xs"></i>
+                </button>
+              </div>
+            }
+          </div>
+
+          <div class="relative">
+            <input type="file"
+                   multiple
+                   accept="image/*"
+                   class="opacity-0 absolute w-full h-full cursor-pointer"
+                   (change)="onFileSelected($event)"
+                   [disabled]="imagePreviews().length >= maxImages">
+            <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center
+                        hover:border-primary transition-colors">
+              <i class="ph ph-image text-2xl text-gray-400 mb-2"></i>
+              <p class="text-sm text-gray-500">
+                Click to upload images ({{ maxImages - imagePreviews().length }} remaining)
+              </p>
+            </div>
+          </div>
+
+<!--          @if (machineForm.controls.images.errors?.maxlength) {-->
+<!--            <p class="text-red-500 text-sm">-->
+<!--              Maximum {{ maxImages }} images allowed-->
+<!--            </p>-->
+<!--          }-->
+        </div>
+
+        <div class="mt-8 flex justify-end space-x-4">
+          <button type="button" class="btn btn-ghost" (click)="closeModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="background-color: #4a704a;">
+            {{ editingMachine() ? 'Save Changes' : 'Add Machinery' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

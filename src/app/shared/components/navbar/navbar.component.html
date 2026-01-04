@@ -1,0 +1,21 @@
+<div class="navbar bg-base-100 shadow-sm">
+  <div class="flex-1">
+    <a routerLink="/equipment" class="btn btn-ghost text-xl" style="color: #4a704a;">Agri-Rentals</a>
+  </div>
+  <div class="flex gap-2">
+    <div class="dropdown dropdown-end">
+      <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+        @if(currentUser && currentUser.email != null){
+          <div class=" flex items-center justify-center w-10 rounded-full bg-gray-300 p-2 font-bold">
+            {{ currentUser.email[0] | titlecase }}
+          </div>
+        }
+      </div>
+      <ul
+        tabindex="0"
+        class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow">
+        <li><a (click)="logout()">Logout</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
